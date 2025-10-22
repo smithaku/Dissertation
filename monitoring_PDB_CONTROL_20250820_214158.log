@@ -1,0 +1,6 @@
+--- Monitoring Report for PDB_CONTROL at 20250820_214158 ---
+CPU_used_by_this_session,94437
+user_commits,47613
+physical_reads,57891872
+physical_writes,151624
+Active_User_Sessions,3

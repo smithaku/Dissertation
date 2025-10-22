@@ -1,0 +1,6 @@
+--- Monitoring Report for PDB_PERF_TUNE at 20250820_220716 ---
+CPU_used_by_this_session,123167
+user_commits,50120
+physical_reads,57988455
+physical_writes,59967
+Active_User_Sessions,1
