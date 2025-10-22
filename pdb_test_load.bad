@@ -1,0 +1,11 @@
+@echo OFF
+ECHO Loading data into PDB_PERF_TUNE...
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\region.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_region_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_region_load.bad" direct=true parallel=true rows=100000
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\nation.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_nation_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_nation_load.bad" direct=true parallel=true rows=100000
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\part.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_part_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_part_load.bad" direct=true parallel=true rows=100000
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\supplier.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_supplier_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_supplier_load.bad" direct=true parallel=true rows=100000
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\partsupp.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_partsupp_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_partsupp_load.bad" direct=true parallel=true rows=100000
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\customer.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_customer_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_customer_load.bad" direct=true parallel=true rows=100000
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\orders.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_orders_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_orders_load.bad" direct=true parallel=true rows=100000
+sqlldr userid=tpch_user/tpch_user@db01:1521/PDB_PERF_TUNE control="D:\TPC-H V3.0.1\dbgen\lineitem.ctl" log="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_lineitem_load.log" bad="D:\TPC-H V3.0.1\dbgen\logs\PDB_PERF_TUNE_lineitem_load.bad" direct=true parallel=true rows=100000
+ECHO Finished PDB_PERF_TUNE.

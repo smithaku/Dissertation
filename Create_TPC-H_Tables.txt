@@ -1,0 +1,286 @@
+## Create USER and Default Tablespace
+CREATE USER tpch_user IDENTIFIED BY tpch_user ACCOUNT UNLOCK;
+GRANT CONNECT, RESOURCE TO tpch_user;
+ALTER USER tpch_user QUOTA UNLIMITED ON USERS; 
+
+-- Or a specific tablespace
+-- Grant other privileges as needed, e.g., CREATE VIEW
+
+
+CREATE TABLESPACE USERS 
+DATAFILE 'F:\oradata\CDBML\PDB_CONTROL\users01.dbf' 
+SIZE 100M AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
+
+
+SQLPLUS tpch_user/tpch_user@PDB_PERF_TUNE
+SQLPLUS tpch_user/tpch_user@PDB_ANOMALY_DET
+SQLPLUS tpch_user/tpch_user@PDB_AI_TRAIN
+SQLPLUS tpch_user/tpch_user@PDB_LOAD_TEST
+SQLPLUS tpch_user/tpch_user@PDB_REALTIME
+SQLPLUS tpch_user/tpch_user@PDB_QUERY_OPT
+SQLPLUS tpch_user/tpch_user@PDB_RESOURCE_MGMT
+SQLPLUS tpch_user/tpch_user@PDB_LOG_ANALYTICS
+SQLPLUS tpch_user/tpch_user@PDB_CONTROL
+
+
+## here are the Oracle SQL CREATE TABLE statements for all 8 TPC-H tables, adapted from the standard TPC-H DDL specification (dss.ddl). As per TPC-H documented approach, these statements omit primary and foreign key constraints, which are intended to be added after the data loading phase to improve loading speed. NOT NULL constraints are included for columns that are typically part of primary keys.
+
+Remember to connect to each PDB as the tpch_user before running these DDL commands.
+
+-- REGION Table
+CREATE TABLE REGION (
+    R_REGIONKEY  NUMBER NOT NULL,
+    R_NAME       CHAR(25 CHAR) NOT NULL,
+    R_COMMENT    VARCHAR2(152 CHAR)
+    -- R_REGIONKEY PK to be added post-load
+);
+
+-- NATION Table
+CREATE TABLE NATION (
+    N_NATIONKEY  NUMBER NOT NULL,
+    N_NAME       CHAR(25 CHAR) NOT NULL,
+    N_REGIONKEY  NUMBER NOT NULL, -- FK to REGION
+    N_COMMENT    VARCHAR2(152 CHAR)
+    -- N_NATIONKEY PK to be added post-load
+    -- N_REGIONKEY FK to be added post-load
+);
+
+-- PART Table
+CREATE TABLE PART (
+    P_PARTKEY    NUMBER NOT NULL,
+    P_NAME       VARCHAR2(55 CHAR) NOT NULL,
+    P_MFGR       CHAR(25 CHAR) NOT NULL,
+    P_BRAND      CHAR(10 CHAR) NOT NULL,
+    P_TYPE       VARCHAR2(25 CHAR) NOT NULL,
+    P_SIZE       NUMBER NOT NULL,
+    P_CONTAINER  CHAR(10 CHAR) NOT NULL,
+    P_RETAILPRICE NUMBER(15,2) NOT NULL,
+    P_COMMENT    VARCHAR2(23 CHAR)
+    -- P_PARTKEY PK to be added post-load
+);
+
+-- SUPPLIER Table
+CREATE TABLE SUPPLIER (
+    S_SUPPKEY    NUMBER NOT NULL,
+    S_NAME       CHAR(25 CHAR) NOT NULL,
+    S_ADDRESS    VARCHAR2(40 CHAR) NOT NULL,
+    S_NATIONKEY  NUMBER NOT NULL, -- FK to NATION
+    S_PHONE      CHAR(15 CHAR) NOT NULL,
+    S_ACCTBAL    NUMBER(15,2) NOT NULL,
+    S_COMMENT    VARCHAR2(101 CHAR)
+    -- S_SUPPKEY PK to be added post-load
+    -- S_NATIONKEY FK to be added post-load
+);
+
+-- PARTSUPP Table
+CREATE TABLE PARTSUPP (
+    PS_PARTKEY   NUMBER NOT NULL, -- FK to PART
+    PS_SUPPKEY   NUMBER NOT NULL, -- FK to SUPPLIER
+    PS_AVAILQTY  NUMBER NOT NULL,
+    PS_SUPPLYCOST NUMBER(15,2) NOT NULL,
+    PS_COMMENT   VARCHAR2(199 CHAR)
+    -- (PS_PARTKEY, PS_SUPPKEY) PK to be added post-load
+    -- PS_PARTKEY FK to be added post-load
+    -- PS_SUPPKEY FK to be added post-load
+);
+
+-- CUSTOMER Table
+CREATE TABLE CUSTOMER (
+    C_CUSTKEY    NUMBER NOT NULL,
+    C_NAME       VARCHAR2(25 CHAR) NOT NULL,
+    C_ADDRESS    VARCHAR2(40 CHAR) NOT NULL,
+    C_NATIONKEY  NUMBER NOT NULL, -- FK to NATION
+    C_PHONE      CHAR(15 CHAR) NOT NULL,
+    C_ACCTBAL    NUMBER(15,2) NOT NULL,
+    C_MKTSEGMENT CHAR(10 CHAR) NOT NULL,
+    C_COMMENT    VARCHAR2(117 CHAR)
+    -- C_CUSTKEY PK to be added post-load
+    -- C_NATIONKEY FK to be added post-load
+);
+
+-- ORDERS Table
+CREATE TABLE ORDERS (
+    O_ORDERKEY   NUMBER NOT NULL,
+    O_CUSTKEY    NUMBER NOT NULL, -- FK to CUSTOMER
+    O_ORDERSTATUS CHAR(1 CHAR) NOT NULL,
+    O_TOTALPRICE NUMBER(15,2) NOT NULL,
+    O_ORDERDATE  DATE NOT NULL,
+    O_ORDERPRIORITY CHAR(15 CHAR) NOT NULL,
+    O_CLERK      CHAR(15 CHAR) NOT NULL,
+    O_SHIPPRIORITY NUMBER NOT NULL,
+    O_COMMENT    VARCHAR2(79 CHAR)
+    -- O_ORDERKEY PK to be added post-load
+    -- O_CUSTKEY FK to be added post-load
+);
+
+-- LINEITEM Table
+CREATE TABLE LINEITEM (
+    L_ORDERKEY   NUMBER NOT NULL, -- FK to ORDERS
+    L_PARTKEY    NUMBER NOT NULL, -- FK to PART
+    L_SUPPKEY    NUMBER NOT NULL, -- FK to SUPPLIER
+    L_LINENUMBER NUMBER NOT NULL,
+    L_QUANTITY   NUMBER(15,2) NOT NULL,
+    L_EXTENDEDPRICE NUMBER(15,2) NOT NULL,
+    L_DISCOUNT   NUMBER(15,2) NOT NULL,
+    L_TAX        NUMBER(15,2) NOT NULL,
+    L_RETURNFLAG CHAR(1 CHAR) NOT NULL,
+    L_LINESTATUS CHAR(1 CHAR) NOT NULL,
+    L_SHIPDATE   DATE NOT NULL,
+    L_COMMITDATE DATE NOT NULL,
+    L_RECEIPTDATE DATE NOT NULL,
+    L_SHIPINSTRUCT CHAR(25 CHAR) NOT NULL,
+    L_SHIPMODE   CHAR(10 CHAR) NOT NULL,
+    L_COMMENT    VARCHAR2(44 CHAR)
+    -- (L_ORDERKEY, L_LINENUMBER) PK to be added post-load
+    -- L_ORDERKEY FK to be added post-load
+    -- L_PARTKEY, L_SUPPKEY related to PARTSUPP, or directly to PART and SUPPLIER.
+    --   Usually FKs to ORDERS(O_ORDERKEY) and PARTSUPP(PS_PARTKEY, PS_SUPPKEY)
+    --   or individual FKs to PART(P_PARTKEY) and SUPPLIER(S_SUPPKEY) are also common.
+    --   For simplicity during initial load based on typical dss.ddl, direct FKs to PART and SUPPLIER can be considered.
+);
+
+
+
+here are the Oracle SQL ALTER TABLE scripts to add the primary key (PK) and foreign key (FK) constraints to the TPC-H tables. It's generally recommended to create primary keys before the foreign keys that reference them.
+
+Execute these commands after connecting to each PDB as the tpch_user and after all data has been loaded into the tables.
+
+-- Add Primary Keys
+
+-- REGION Table
+ALTER TABLE REGION
+ADD CONSTRAINT PK_REGION PRIMARY KEY (R_REGIONKEY);
+
+-- NATION Table
+ALTER TABLE NATION
+ADD CONSTRAINT PK_NATION PRIMARY KEY (N_NATIONKEY);
+
+-- PART Table
+ALTER TABLE PART
+ADD CONSTRAINT PK_PART PRIMARY KEY (P_PARTKEY);
+
+-- SUPPLIER Table
+ALTER TABLE SUPPLIER
+ADD CONSTRAINT PK_SUPPLIER PRIMARY KEY (S_SUPPKEY);
+
+-- CUSTOMER Table
+ALTER TABLE CUSTOMER
+ADD CONSTRAINT PK_CUSTOMER PRIMARY KEY (C_CUSTKEY);
+
+-- ORDERS Table
+ALTER TABLE ORDERS
+ADD CONSTRAINT PK_ORDERS PRIMARY KEY (O_ORDERKEY);
+
+-- PARTSUPP Table (Composite Primary Key)
+ALTER TABLE PARTSUPP
+ADD CONSTRAINT PK_PARTSUPP PRIMARY KEY (PS_PARTKEY, PS_SUPPKEY);
+
+-- LINEITEM Table (Composite Primary Key)
+ALTER TABLE LINEITEM
+ADD CONSTRAINT PK_LINEITEM PRIMARY KEY (L_ORDERKEY, L_LINENUMBER);
+
+-- Add Foreign Keys
+
+-- NATION Table
+ALTER TABLE NATION
+ADD CONSTRAINT FK_NATION_REGION FOREIGN KEY (N_REGIONKEY)
+REFERENCES REGION(R_REGIONKEY);
+
+-- SUPPLIER Table
+ALTER TABLE SUPPLIER
+ADD CONSTRAINT FK_SUPPLIER_NATION FOREIGN KEY (S_NATIONKEY)
+REFERENCES NATION(N_NATIONKEY);
+
+-- PARTSUPP Table
+ALTER TABLE PARTSUPP
+ADD CONSTRAINT FK_PARTSUPP_PART FOREIGN KEY (PS_PARTKEY)
+REFERENCES PART(P_PARTKEY);
+
+ALTER TABLE PARTSUPP
+ADD CONSTRAINT FK_PARTSUPP_SUPPLIER FOREIGN KEY (PS_SUPPKEY)
+REFERENCES SUPPLIER(S_SUPPKEY);
+
+-- CUSTOMER Table
+ALTER TABLE CUSTOMER
+ADD CONSTRAINT FK_CUSTOMER_NATION FOREIGN KEY (C_NATIONKEY)
+REFERENCES NATION(N_NATIONKEY);
+
+-- ORDERS Table
+ALTER TABLE ORDERS
+ADD CONSTRAINT FK_ORDERS_CUSTOMER FOREIGN KEY (O_CUSTKEY)
+REFERENCES CUSTOMER(C_CUSTKEY);
+
+-- LINEITEM Table
+ALTER TABLE LINEITEM
+ADD CONSTRAINT FK_LINEITEM_ORDERS FOREIGN KEY (L_ORDERKEY)
+REFERENCES ORDERS(O_ORDERKEY);
+
+-- According to TPC-H specification, L_PARTKEY and L_SUPPKEY in LINEITEM
+-- together form a foreign key to PARTSUPP table.
+ALTER TABLE LINEITEM
+ADD CONSTRAINT FK_LINEITEM_PARTSUPP FOREIGN KEY (L_PARTKEY, L_SUPPKEY)
+REFERENCES PARTSUPP(PS_PARTKEY, PS_SUPPKEY);
+
+-- Alternatively, or in addition if your model requires it (though the above is standard for TPC-H RI):
+-- Some implementations might also have direct FKs from LINEITEM to PART and SUPPLIER
+-- ALTER TABLE LINEITEM
+-- ADD CONSTRAINT FK_LINEITEM_PART FOREIGN KEY (L_PARTKEY)
+-- REFERENCES PART(P_PARTKEY);
+--
+-- ALTER TABLE LINEITEM
+-- ADD CONSTRAINT FK_LINEITEM_SUPPLIER FOREIGN KEY (L_SUPPKEY)
+-- REFERENCES SUPPLIER(S_SUPPKEY);
+-- However, the composite FK to PARTSUPP is the more direct representation of TPC-H referential integrity.
+
+
+here are the CREATE INDEX scripts for the TPC-H tables. These indexes are suggested for foreign key columns (that aren't already the leading column of a primary key index) and other columns commonly used in TPC-H query predicates to improve performance.
+
+Primary keys automatically get an index created on them, so explicit indexes are not needed for columns that are solely primary keys or the leading column of a composite primary key (e.g., R_REGIONKEY in REGION, P_PARTKEY in PART, L_ORDERKEY as part of LINEITEM's PK).
+
+Run these commands after connecting to each PDB as the tpch_user, and after the primary and foreign key constraints have been added.
+
+-- Indexes for NATION Table
+CREATE INDEX IDX_NATION_REGIONKEY ON NATION(N_REGIONKEY);
+
+-- Indexes for SUPPLIER Table
+CREATE INDEX IDX_SUPPLIER_NATIONKEY ON SUPPLIER(S_NATIONKEY);
+
+-- Indexes for PARTSUPP Table
+-- PK is (PS_PARTKEY, PS_SUPPKEY). PS_PARTKEY is the leading column and thus indexed.
+-- An index on PS_SUPPKEY can be beneficial if it's queried independently for the FK relationship.
+CREATE INDEX IDX_PARTSUPP_SUPPKEY ON PARTSUPP(PS_SUPPKEY);
+
+-- Indexes for CUSTOMER Table
+CREATE INDEX IDX_CUSTOMER_NATIONKEY ON CUSTOMER(C_NATIONKEY);
+
+-- Indexes for ORDERS Table
+CREATE INDEX IDX_ORDERS_CUSTKEY ON ORDERS(O_CUSTKEY);
+CREATE INDEX IDX_ORDERS_ORDERDATE ON ORDERS(O_ORDERDATE); -- Frequently used in range scans
+
+-- Indexes for LINEITEM Table
+-- PK is (L_ORDERKEY, L_LINENUMBER). L_ORDERKEY is the leading column and thus indexed by the PK index.
+
+-- For the composite Foreign Key (L_PARTKEY, L_SUPPKEY) REFERENCES PARTSUPP
+CREATE INDEX IDX_LINEITEM_FK_PARTSUPP ON LINEITEM(L_PARTKEY, L_SUPPKEY);
+
+-- Individual indexes on FK components can also be beneficial if queried independently.
+-- The IDX_LINEITEM_FK_PARTSUPP above covers queries starting with L_PARTKEY.
+-- An index on L_SUPPKEY alone can be useful.
+CREATE INDEX IDX_LINEITEM_SUPPKEY ON LINEITEM(L_SUPPKEY);
+-- Note: An index on L_PARTKEY alone is covered if IDX_LINEITEM_FK_PARTSUPP (L_PARTKEY, L_SUPPKEY) exists.
+-- However, if queries filter only on L_PARTKEY, a dedicated index might sometimes be chosen by the optimizer.
+-- For a comprehensive setup, you might also add:
+-- CREATE INDEX IDX_LINEITEM_PARTKEY ON LINEITEM(L_PARTKEY);
+-- But start with the composite and the L_SUPPKEY index.
+
+-- Indexes on frequently queried date columns in LINEITEM
+CREATE INDEX IDX_LINEITEM_SHIPDATE ON LINEITEM(L_SHIPDATE);
+CREATE INDEX IDX_LINEITEM_COMMITDATE ON LINEITEM(L_COMMITDATE);
+CREATE INDEX IDX_LINEITEM_RECEIPTDATE ON LINEITEM(L_RECEIPTDATE);
+
+-- Optional: Index for specific queries like TPC-H Q1
+-- CREATE INDEX IDX_LINEITEM_Q1 ON LINEITEM(L_RETURNFLAG, L_LINESTATUS, L_SHIPDATE, L_DISCOUNT, L_QUANTITY, L_EXTENDEDPRICE, L_TAX);
+-- A simpler version often seen for Q1:
+-- CREATE INDEX IDX_LINEITEM_FLAG_STATUS ON LINEITEM(L_RETURNFLAG, L_LINESTATUS);
+-- For your general purpose, the individual date indexes above are a good start.
+-- You can add more specialized indexes later based on query analysis.
