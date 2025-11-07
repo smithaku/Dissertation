@@ -13,7 +13,7 @@ These files provided instructions to Oracle's sqlldr.exe utility on how to load 
 SQL DDL Scripts Create_TPC-H_Tablestxt (Table/Constraint/Index Creation):
 These SQL scripts were used to create the TPC-H tables, and later, the primary keys, foreign keys, and any necessary indexes within each PDB .
 
-## Baseline data from TPC-H 
+## Data from TPC-H 
 Workload Execution Scripts (execute_all_benchmarks.bat and run_and_log_query.sql):
 These scripts were used to run the TPC-H benchmark queries systematically across all nine PDBs during the initial baseline data collection phase
 
