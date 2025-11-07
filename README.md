@@ -18,7 +18,7 @@ Workload Execution Scripts (execute_all_benchmarks.bat and run_and_log_query.sql
 These scripts were used to run the TPC-H benchmark queries systematically across all nine PDBs during the initial baseline data collection phase
 
 ## Baseline data collection for this dissertation
- The initial baseline data (baseline_performance_data.csv) used to train the anomaly detection model was collected earlier using a similar process. The TPC-H benchmark was run only on PDB_CONTROL using the automated script framework (execute_all_benchmarks.bat and run_and_log_query.sql), and the query execution times were logged into the tpch_query_log table (CREATE_tpch_query_log_table.sql) within the PDB. This data was then consolidated into the CSV file.
+ The initial baseline data (baseline_performance_data.csv) used to train the anomaly detection model was collected earlier using the Collect_BaseLine_Data.py script. The TPC-H benchmark was run only on PDB_CONTROL using the automated script framework (execute_all_benchmarks.bat and run_and_log_query.sql), and the query execution times were logged into the tpch_query_log table (CREATE_tpch_query_log_table.sql) within the PDB. This data was then consolidated into the CSV file.
 
 
 ## Final Data Collection for this dissertation
